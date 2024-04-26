@@ -90,8 +90,16 @@ def main():
     """
     Hlavní řídící funkce programu a funkce načítající vstupy.
     """
-
-    max_volumes = [10, 78, 106, 200]
+    # odsud zakomentovat pro spuštění bez sys.stdin
+    max_volumes = []
+    amount = 0
+    for i, line in enumerate(sys.stdin):
+        if i == 0:
+            amount = int(line.strip().replace("\n", ""))
+        if i != 0 and i <= amount:
+            max_volumes.append(int(line.strip().replace("\n", "")))
+    # zde zkonči zakomentování, odkomentuj max volumes
+    # max_volumes = [10, 78, 106, 200]
     max_volumes.sort()
     start_volume = ([0] * (len(max_volumes) - 1)) + [max_volumes[-1]]
     first_node = Node(max_volumes, start_volume, 0, 0)
