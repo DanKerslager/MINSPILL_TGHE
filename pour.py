@@ -24,9 +24,7 @@ def create_nodes(first_node):
     """
     queue = [first_node]
     heapq.heapify(queue)
-    #nodes = [first_node]
-    states = set()
-    states.add(tuple(first_node.state))
+    states = {tuple(first_node.state): first_node.cost}
     max_vol = first_node.bottles[-1]
     costs = [float('inf')] * (max_vol+1)
     transfers = [float('inf')] * (max_vol+1)
@@ -41,22 +39,16 @@ def create_nodes(first_node):
                     if i != j and node.state[j] != node.bottles[j]:
                         new_node = pour(node, i, j)
                         new_state = tuple(new_node.state)
-
-                        for volume in new_state:
-                            if new_node.cost <= costs[volume]:
-                                costs[volume] = new_node.cost
-                                if new_node.cost == costs[volume]:
-                                    transfers[volume] = min([transfers[volume], new_node.transfers])
-                                else:
-                                    transfers[volume] = new_node.transfers
-
-                        if new_state not in states:
-                            states.add(new_state)
+                        if new_state not in states or new_node.cost < states[new_state]:
+                            states[new_state] = new_node.cost
                             heapq.heappush(queue, new_node)
-                            #nodes.append(new_node)
-                            # print("added")
+                            for volume in new_state:
+                                if new_node.cost < costs[volume]:
+                                    costs[volume] = new_node.cost
+                                    transfers[volume] = new_node.transfers
+                                elif new_node.cost == costs[volume]:
+                                    transfers[volume] = min([transfers[volume], new_node.transfers])
     return costs, transfers
-    # return nodes
 
 
 def pour(node, from_index, to_index):
@@ -72,23 +64,6 @@ def pour(node, from_index, to_index):
     new_state[to_index] += pour_amount
     # print(new_state, new_cost)
     return Node(node.bottles, new_state, new_cost, new_transfers)
-
-
-def nodes_process(nodes, max_vol):
-    """
-    Z nalezených nodes najde nejkratší cesty k jednotlivým objemům.
-    """
-    costs = [float('inf')] * (max_vol+1)
-    transfers = [float('inf')] * (max_vol+1)
-    for new_node in nodes:
-        for volume in new_node.state:
-            if new_node.cost < costs[volume]:
-                costs[volume] = new_node.cost
-                if new_node.cost == costs[volume]:
-                    transfers[volume] = min([transfers[volume], new_node.transfers])
-                else:
-                    transfers[volume] = new_node.transfers
-    return costs, transfers
 
 
 def print_output(costs, transfers):
@@ -123,8 +98,6 @@ def main():
     start_volume = ([0] * (len(max_volumes) - 1)) + [max_volumes[-1]]
     first_node = Node(max_volumes, start_volume, 0, 0)
     costs, transfers = create_nodes(first_node)
-    #nodes = create_nodes(first_node)
-    #costs, transfers = nodes_process(nodes, max_volumes[-1])
     print_output(costs, transfers)
 
 
