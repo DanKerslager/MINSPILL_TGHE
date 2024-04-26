@@ -27,6 +27,9 @@ def create_nodes(first_node):
     nodes = [first_node]
     states = set()
     states.add(tuple(first_node.state))
+    max_vol = first_node.bottles[-1]
+    # costs = [float('inf')] * (max_vol+1)
+    # transfers = [float('inf')] * (max_vol+1)
     while queue:
         node = heapq.heappop(queue)
         # print("next", node.state, node.cost,)
@@ -36,6 +39,15 @@ def create_nodes(first_node):
                     if i != j and node.state[j] != node.bottles[j]:
                         new_node = pour(node, i, j)
                         new_state = tuple(new_node.state)
+                        """
+                        for volume in new_state:
+                            if new_node.cost <= costs[volume]:
+                                costs[volume] = new_node.cost
+                                if new_node.cost == costs[volume]:
+                                    transfers[volume] = min([transfers[volume], new_node.transfers])
+                                else:
+                                    transfers[volume] = new_node.transfers
+                        """
                         if new_state not in states:
                             states.add(new_state)
                             heapq.heappush(queue, new_node)
@@ -66,13 +78,13 @@ def nodes_process(nodes, max_vol):
     costs = [float('inf')] * (max_vol+1)
     transfers = [float('inf')] * (max_vol+1)
     for node in nodes:
-        for i in range(1, max_vol+1):
-            if i in node.state and node.cost <= costs[i]:
-                costs[i] = node.cost
-                if node.cost == costs[i]:
-                    transfers[i] = min([transfers[i], node.transfers])
+        for volume in node.state:
+            if node.cost < costs[volume]:
+                costs[volume] = node.cost
+                if node.cost == costs[volume]:
+                    transfers[volume] = min([transfers[volume], node.transfers])
                 else:
-                    transfers[i] = node.transfers
+                    transfers[volume] = node.transfers
     return costs, transfers
 
 
