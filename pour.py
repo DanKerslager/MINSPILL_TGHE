@@ -70,7 +70,10 @@ def nodes_process(nodes, max_vol):
         for i in range(1, max_vol+1):
             if i in node.state and node.cost <= costs[i]:
                 costs[i] = node.cost
-                transfers[i] = node.transfers
+                if node.cost == costs[i]:
+                    transfers[i] = min([transfers[i], node.transfers])
+                else:
+                    transfers[i] = node.transfers
     return costs, transfers
 
 
