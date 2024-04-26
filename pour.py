@@ -27,7 +27,6 @@ def create_nodes(first_node):
     nodes = [first_node]
     states = set()
     states.add(tuple(first_node.state))
-    maximum = first_node.bottles[-1]
     while queue:
         node = heapq.heappop(queue)
         # print("next", node.state, node.cost,)
@@ -36,8 +35,9 @@ def create_nodes(first_node):
                 for j in range(len(node.state)):
                     if i != j and node.state[j] != node.bottles[j]:
                         new_node = pour(node, i, j)
-                        if tuple(new_node.state) not in states:
-                            states.add(tuple(new_node.state))
+                        new_state = tuple(new_node.state)
+                        if new_state not in states:
+                            states.add(new_state)
                             heapq.heappush(queue, new_node)
                             nodes.append(new_node)
                             # print("added")
@@ -92,7 +92,8 @@ def main():
     """
     Hlavní řídící funkce programu a funkce načítající vstupy.
     """
-    """ odsud zakomentovat pro spuštění bez sys.stdin
+    """
+    # odsud zakomentovat pro spuštění bez sys.stdin
     max_volumes = []
     amount = 0
     for i, line in enumerate(sys.stdin):
@@ -100,9 +101,9 @@ def main():
             amount = int(line.strip().replace("\n", ""))
         if i != 0 and i <= amount:
             max_volumes.append(int(line.strip().replace("\n", "")))
-    zde zkonči zakomentování, odkomentuj max volumes
+    # zde zkonči zakomentování, odkomentuj max volumes
     """
-    max_volumes = [10, 2, 5, 27, 50]
+    max_volumes = [10, 2, 5, 27, 28, 150]
     max_volumes.sort()
     start_volume = ([0] * (len(max_volumes) - 1)) + [max_volumes[-1]]
     first_node = Node(max_volumes, start_volume, 0, 0)
@@ -114,5 +115,4 @@ def main():
 if __name__ == "__main__":
     start = time.time()
     main()
-    end = time.time()
-    print(end - start)
+    print(time.time() - start)
