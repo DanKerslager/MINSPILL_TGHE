@@ -24,12 +24,14 @@ def create_nodes(first_node):
     """
     queue = [first_node]
     heapq.heapify(queue)
-    nodes = [first_node]
+    #nodes = [first_node]
     states = set()
     states.add(tuple(first_node.state))
     max_vol = first_node.bottles[-1]
-    # costs = [float('inf')] * (max_vol+1)
-    # transfers = [float('inf')] * (max_vol+1)
+    costs = [float('inf')] * (max_vol+1)
+    transfers = [float('inf')] * (max_vol+1)
+    costs[max_vol] = 0
+    transfers[max_vol] = 0
     while queue:
         node = heapq.heappop(queue)
         # print("next", node.state, node.cost,)
@@ -39,7 +41,7 @@ def create_nodes(first_node):
                     if i != j and node.state[j] != node.bottles[j]:
                         new_node = pour(node, i, j)
                         new_state = tuple(new_node.state)
-                        """
+
                         for volume in new_state:
                             if new_node.cost <= costs[volume]:
                                 costs[volume] = new_node.cost
@@ -47,13 +49,14 @@ def create_nodes(first_node):
                                     transfers[volume] = min([transfers[volume], new_node.transfers])
                                 else:
                                     transfers[volume] = new_node.transfers
-                        """
+
                         if new_state not in states:
                             states.add(new_state)
                             heapq.heappush(queue, new_node)
-                            nodes.append(new_node)
+                            #nodes.append(new_node)
                             # print("added")
-    return nodes
+    return costs, transfers
+    # return nodes
 
 
 def pour(node, from_index, to_index):
@@ -77,14 +80,14 @@ def nodes_process(nodes, max_vol):
     """
     costs = [float('inf')] * (max_vol+1)
     transfers = [float('inf')] * (max_vol+1)
-    for node in nodes:
-        for volume in node.state:
-            if node.cost < costs[volume]:
-                costs[volume] = node.cost
-                if node.cost == costs[volume]:
-                    transfers[volume] = min([transfers[volume], node.transfers])
+    for new_node in nodes:
+        for volume in new_node.state:
+            if new_node.cost < costs[volume]:
+                costs[volume] = new_node.cost
+                if new_node.cost == costs[volume]:
+                    transfers[volume] = min([transfers[volume], new_node.transfers])
                 else:
-                    transfers[volume] = node.transfers
+                    transfers[volume] = new_node.transfers
     return costs, transfers
 
 
@@ -115,12 +118,13 @@ def main():
             max_volumes.append(int(line.strip().replace("\n", "")))
     # zde zkonči zakomentování, odkomentuj max volumes
     """
-    max_volumes = [10, 2, 5, 27, 28, 150]
+    max_volumes = [78, 75, 199, 106]
     max_volumes.sort()
     start_volume = ([0] * (len(max_volumes) - 1)) + [max_volumes[-1]]
     first_node = Node(max_volumes, start_volume, 0, 0)
-    nodes = create_nodes(first_node)
-    costs, transfers = nodes_process(nodes, max_volumes[-1])
+    costs, transfers = create_nodes(first_node)
+    #nodes = create_nodes(first_node)
+    #costs, transfers = nodes_process(nodes, max_volumes[-1])
     print_output(costs, transfers)
 
 
