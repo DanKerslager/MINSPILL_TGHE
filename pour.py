@@ -24,23 +24,26 @@ def create_nodes(first_node):
     """
     queue = [first_node]
     heapq.heapify(queue)
-    states = {tuple(first_node.state): first_node.cost}
+    states = {tuple(first_node.state): [first_node.cost, 0]}
     max_vol = first_node.bottles[-1]
     costs = [float('inf')] * (max_vol+1)
     transfers = [float('inf')] * (max_vol+1)
     costs[max_vol] = 0
     transfers[max_vol] = 0
+    nums = set(range(1, max_vol+1))
     while queue:
         node = heapq.heappop(queue)
-        # print("next", node.state, node.cost,)
+        nums -= set(node.state)
+        if len(set(nums)) == 0 and min(costs) < node.cost:
+            return costs, transfers
         for i, state in enumerate(node.state):
             if state != 0:
                 for j in range(len(node.state)):
                     if i != j and node.state[j] != node.bottles[j]:
                         new_node = pour(node, i, j)
                         new_state = tuple(new_node.state)
-                        if new_state not in states or new_node.cost < states[new_state]:
-                            states[new_state] = new_node.cost
+                        if new_state not in states or (new_node.cost, new_node.transfers) < tuple(states[new_state]):
+                            states[new_state] = [new_node.cost, new_node.transfers]
                             heapq.heappush(queue, new_node)
                             for volume in new_state:
                                 if new_node.cost < costs[volume]:
@@ -55,14 +58,12 @@ def pour(node, from_index, to_index):
     """
     Metoda provadějící přelití z lahve do lahve a tudíž i vytvoření new_node.
     """
-    # print(from_index, to_index)
     pour_amount = min([node.state[from_index], (node.bottles[to_index] - node.state[to_index])])
     new_cost = node.cost + pour_amount
     new_transfers = node.transfers + 1
     new_state = list(node.state)
     new_state[from_index] -= pour_amount
     new_state[to_index] += pour_amount
-    # print(new_state, new_cost)
     return Node(node.bottles, new_state, new_cost, new_transfers)
 
 
