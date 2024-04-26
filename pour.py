@@ -1,5 +1,6 @@
 import heapq
 import sys
+import time
 
 
 class Node:
@@ -28,8 +29,6 @@ def create_nodes(first_node):
     states.add(tuple(first_node.state))
     maximum = first_node.bottles[-1]
     while queue:
-        if (len(set([numbers for tpl in states for numbers in tpl]))) == maximum+1:
-            return nodes
         node = heapq.heappop(queue)
         # print("next", node.state, node.cost,)
         for i, state in enumerate(node.state):
@@ -93,7 +92,7 @@ def main():
     """
     Hlavní řídící funkce programu a funkce načítající vstupy.
     """
-    # odsud zakomentovat pro spuštění bez sys.stdin
+    """ odsud zakomentovat pro spuštění bez sys.stdin
     max_volumes = []
     amount = 0
     for i, line in enumerate(sys.stdin):
@@ -101,8 +100,9 @@ def main():
             amount = int(line.strip().replace("\n", ""))
         if i != 0 and i <= amount:
             max_volumes.append(int(line.strip().replace("\n", "")))
-    # zde zkonči zakomentování, odkomentuj max volumes
-    # max_volumes = [10, 78, 106, 200]
+    zde zkonči zakomentování, odkomentuj max volumes
+    """
+    max_volumes = [10, 2, 5, 27, 50]
     max_volumes.sort()
     start_volume = ([0] * (len(max_volumes) - 1)) + [max_volumes[-1]]
     first_node = Node(max_volumes, start_volume, 0, 0)
@@ -112,4 +112,7 @@ def main():
 
 
 if __name__ == "__main__":
+    start = time.time()
     main()
+    end = time.time()
+    print(end - start)
