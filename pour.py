@@ -5,7 +5,7 @@ import time
 
 class Node:
     """
-    Třída reprezentující stavy lahvý po jednotlivých přelitích, tudíž i vrcholy grafu.
+    Třída reprezentující stavy lahví po jednotlivých přelitích, tudíž i vrcholy grafu.
     """
     def __init__(self, bottles, state, cost, transfers):
         self.bottles = bottles  # objemy nádob
@@ -37,7 +37,7 @@ def create_nodes(first_node):
     nums = set(range(1, max_vol+1))
     while queue:
         node = heapq.heappop(queue)
-        # Porovnání nalezených objemů s nejnižšímy dosavadnímy hodnotamy
+        # Porovnání nalezených objemů s nejnižšími dosavadními hodnotamy
         node_state = tuple(node.state)
         for volume in node_state:
             if node.cost < costs[volume]:
@@ -79,7 +79,7 @@ def pour(node, from_index, to_index):
 
 def print_output(costs, transfers):
     """
-    Vypíše vyžadovaný output ze získaných nejkradších cesty k jednotlivím objemům.
+    Vypíše vyžadovaný output ze získaných nejkratších cest k jednotlivím objemům.
     """
     for i in range(1, len(costs)):
         print(i, end=" ")
